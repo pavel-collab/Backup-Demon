@@ -1,7 +1,5 @@
-from nbformat import read
 import yadisk
 import os
-from datetime import datetime
 
 def YD_GetDirInfo(y_disk, dir: str):
     info = list(y_disk.listdir(dir))
@@ -43,29 +41,3 @@ def YD_FindObj(y_disk, dir: str, obj_name: str):
 
     objects = [item['name'] for item in dir_info]
     return obj_name in objects
-
-
-
-with open('token', 'r') as Token:
-    token = Token.read()
-
-y = yadisk.YaDisk(token=token)
-
-if y.check_token() != True:
-    print('Access error')
-else:
-    print('Access ok')
-
-    ## upload example
-    # y.mkdir("/test/")                                   # Создать папку
-    # y.upload("./test_dir/file1", "/test/file1.txt") # Загружает первый файл
-    # y.upload("./test_dir/file2", "/test/file2.txt") # Загружает второй файл
-
-    # # Получает общую информацию о диске
-    # # возможно можно написать парсер для этого вывода 
-    # # и использовать полученную информацию
-    # print(y.get_disk_info())
-    # print()
-
-    YD_PrintDirInfo(y, '/Recorded lesson (self)/')
-    print(YD_FindObj(y, '/Recorded lesson (self)/', '2022-0-28 19-44-28.mkv'))
