@@ -1,5 +1,24 @@
-import yadisk
-import os
+from datetime import datetime
+
+def YD_GetDiskInfo(y_disk):
+    info = y_disk.get_disk_info()
+    disk_info = {}
+
+    disk_info['max_file_size'] = info.max_file_size
+    disk_info['total_space'] = info.total_space
+    disk_info['trash_size'] = info.trash_size
+    disk_info['used_space'] = info.used_space
+
+    return disk_info
+
+def YD_PrintDiskInfo(y_disk):
+    date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
+    info = YD_GetDiskInfo(y_disk)
+
+    print(f'Disk info [{date}]')
+    print('\ttotal space: ', info['total_space'])
+    print('\ttrash size: ', info['trash_size'])
+    print('\tused space: ', info['used_space'])
 
 def YD_GetDirInfo(y_disk, dir: str):
     info = list(y_disk.listdir(dir))
