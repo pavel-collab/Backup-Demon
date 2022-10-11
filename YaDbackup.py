@@ -4,11 +4,6 @@ from datetime import datetime
 
 import YD_API
 
-
-
-# y = yadisk.YaDisk(token=token)
-# print(y.check_token()) # Проверим токен
-
 def backup(y_disk, path):
     date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
     # date = datetime.strftime(datetime.now(), "%d.%m.%Y")
@@ -33,16 +28,16 @@ def backup(y_disk, path):
     
     print(f'[+] Backup has been successful compleated! [{date}]')
 
-if __name__ == '__main__':
-    with open('token', 'r') as Token:
-        token = Token.read()
+# if __name__ == '__main__':
+#     with open('token', 'r') as Token:
+#         token = Token.read()
 
-    y = yadisk.YaDisk(token=token)
+#     y = yadisk.YaDisk(token=token)
 
-    if y.check_token():
-        print('[+] Success connection')
-        backup(y, './test_dir/')
-    else:
-        os._exit(1)
+#     if y.check_token():
+#         print('[+] Success connection')
+#         backup(y, './test_dir/')
+#     else:
+#         os._exit(1)
 
-    YD_API.YD_PrintDiskInfo(y)
+#     YD_API.YD_PrintDiskInfo(y)

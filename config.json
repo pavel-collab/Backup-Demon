@@ -1,0 +1,9 @@
+{
+    "target_dir_path" : "./test_dir/",
+
+    "period_seconds"  : 5,
+    "period_minutes"  : 1,
+    "period_hour"     : 1,
+    "period_day"      : 1,
+    "period_week"     : 0
+}

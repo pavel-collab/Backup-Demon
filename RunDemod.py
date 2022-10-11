@@ -1,17 +1,54 @@
 #!/usr/bin/env python
 
+import json
+import schedule 
+import time
+from pandas import period_range
+import yadisk
 from datetime import datetime
-from time import sleep
-import sys, time
+import sys
+import os
 from Demon import Daemon
+
+import YD_API
+import YaDbackup
  
 class MyDaemon(Daemon):
+
+        def parse_json(self, config_name: str):
+                with open(config_name, 'r') as config_file:
+                        info = config_file.read()
+
+                JsonData = json.loads(info)
+                return JsonData
+        
+        def backup(self, y_disk, target_dir: str):
+                if y_disk.check_token():
+                        print('[+] Success connection')
+                        YaDbackup.backup(y_disk, target_dir)
+                else:
+                        os._exit(1)
+
         def run(self):
-            while(1):
-                f = open('info.log', 'a')
-                f.write(str(datetime.today()))
-                f.write('\n')
-                f.close()
+                with open('token', 'r') as Token:
+                        token = Token.read()
+
+                y = yadisk.YaDisk(token=token)
+
+                JsonData = self.parse_json('config.json')
+                target_dir_path = JsonData['target_dir_path']
+                period_seconds = JsonData['period_seconds']
+
+                schedule.every(period_seconds).seconds.do(self.backup(), y_disk=y, target_dir=target_dir_path)
+
+                # нужно иметь свой цикл для запуска планировщика с периодом в 1 секунду:
+                while True:
+                        schedule.run_pending()
+                        time.sleep(1)
+
+                
+                # YD_API.YD_PrintDiskInfo(y)
+        
 
             
  
