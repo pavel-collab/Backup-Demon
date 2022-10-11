@@ -3,7 +3,6 @@
 import json
 import schedule 
 import time
-from pandas import period_range
 import yadisk
 from datetime import datetime
 import sys
@@ -12,7 +11,13 @@ from Demon import Daemon
 
 import YD_API
 import YaDbackup
- 
+
+#TODO: добавить в конфиг параметр "пусть к конфигу" (обязательно прописывать абсолютный пусть)
+#TODO: добавить в конфиг параметр "пусть к токену" (обязательно прописывать абсолютный пусть)
+#TODO: убрать из конфига параметр "период по секундам"
+#! бэкап занимает некоторое количество времени t, если период выгрузки данных T>t, то могут возникнуть проблемы
+#TODO добавить автоматическую проверку, работает ли демон
+
 class MyDaemon(Daemon):
 
         def parse_json(self, config_name: str):
@@ -39,7 +44,7 @@ class MyDaemon(Daemon):
                 target_dir_path = JsonData['target_dir_path']
                 period_seconds = JsonData['period_seconds']
 
-                schedule.every(period_seconds).seconds.do(self.backup(), y_disk=y, target_dir=target_dir_path)
+                schedule.every(period_seconds).seconds.do(self.backup, y_disk=y, target_dir=target_dir_path)
 
                 # нужно иметь свой цикл для запуска планировщика с периодом в 1 секунду:
                 while True:

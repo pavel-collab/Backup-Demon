@@ -9,6 +9,7 @@
 
 ```
 pip install yadisk
+pip install schedule 
 ```
 
 ### How to use docker
