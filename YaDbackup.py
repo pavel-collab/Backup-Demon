@@ -1,3 +1,4 @@
+from distutils.log import Log
 import yadisk
 import os
 from datetime import datetime
@@ -28,16 +29,13 @@ def backup(y_disk, path):
     
     print(f'[+] Backup has been successful compleated! [{date}]')
 
-# if __name__ == '__main__':
-#     with open('token', 'r') as Token:
-#         token = Token.read()
+def EditLog(y_disk, path_to_log, info):
 
-#     y = yadisk.YaDisk(token=token)
+    #! костыль
+    if YD_API.YD_FindObj(y_disk, path_to_log[:len(path_to_log) - len('info.log')], 'info.log'):
+        y_disk.remove(path_to_log, permanently=True)
 
-#     if y.check_token():
-#         print('[+] Success connection')
-#         backup(y, './test_dir/')
-#     else:
-#         os._exit(1)
-
-#     YD_API.YD_PrintDiskInfo(y)
+    with open('info.log', 'a') as readme_f:
+        readme_f.write(info + '\n')
+    
+    y_disk.upload('info.log', path_to_log)

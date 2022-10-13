@@ -1,5 +1,6 @@
 {
     "target_dir_path" : "./test_dir/",
+    "token_path" : "~/workfile/Other_things/OwnProjects/token",
 
     "period_seconds"  : 5,
     "period_minutes"  : 1,

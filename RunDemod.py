@@ -12,11 +12,10 @@ from Demon import Daemon
 import YD_API
 import YaDbackup
 
-#TODO: добавить в конфиг параметр "пусть к конфигу" (обязательно прописывать абсолютный пусть)
-#TODO: добавить в конфиг параметр "пусть к токену" (обязательно прописывать абсолютный пусть)
+#TODO: дописать нормальное оформление log файла (возможно поменять расширение, чтобы можно было читать прямо с яндекс диска)
 #TODO: убрать из конфига параметр "период по секундам"
 #! бэкап занимает некоторое количество времени t, если период выгрузки данных T>t, то могут возникнуть проблемы
-#TODO добавить автоматическую проверку, работает ли демон
+#TODO сделать запись информации о ходе бэкапа в log
 
 class MyDaemon(Daemon):
 
@@ -35,14 +34,21 @@ class MyDaemon(Daemon):
                         os._exit(1)
 
         def run(self):
-                with open('token', 'r') as Token:
+
+                # We can add the field "path-to-token" into json config and
+                # parse it in code
+                # but actually, we can't do the same with path-to-config
+                # so, there is only way -- to hardcode it into src code 
+                JsonData = self.parse_json('config.json')
+                
+                path_to_token = JsonData['token_path']
+                target_dir_path = JsonData['target_dir_path']
+                period_seconds = JsonData['period_seconds']
+
+                with open(path_to_token, 'r') as Token:
                         token = Token.read()
 
                 y = yadisk.YaDisk(token=token)
-
-                JsonData = self.parse_json('config.json')
-                target_dir_path = JsonData['target_dir_path']
-                period_seconds = JsonData['period_seconds']
 
                 schedule.every(period_seconds).seconds.do(self.backup, y_disk=y, target_dir=target_dir_path)
 
@@ -64,6 +70,11 @@ if __name__ == "__main__":
         if len(sys.argv) == 2:
                 if 'start' == sys.argv[1]:
                         daemon.start()
+                        if not os.path.exists('/tmp/daemon-example.pid'):
+                                print('[-] Error, there is not deamon pid')
+                                sys.exit(3)
+                        else:
+                                print('[+] Backup demon is running')    
                 elif 'stop' == sys.argv[1]:
                         daemon.stop()
                 elif 'restart' == sys.argv[1]:
