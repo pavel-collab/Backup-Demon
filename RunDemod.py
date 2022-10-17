@@ -12,10 +12,13 @@ from Demon import Daemon
 import YD_API
 import YaDbackup
 
-#TODO: дописать нормальное оформление log файла (возможно поменять расширение, чтобы можно было читать прямо с яндекс диска)
-#TODO: убрать из конфига параметр "период по секундам"
-#! бэкап занимает некоторое количество времени t, если период выгрузки данных T>t, то могут возникнуть проблемы
-#TODO сделать запись информации о ходе бэкапа в log
+#? что происходит, если время между отправками меньше времени бэкапа
+#! При тестировании возникла ошибка -- косяк с именами. У info.txt есть локальное имя (полный путь) и имя на удаленном сервере.
+#! Возникает ошибка при нахождении файла
+#TODO дабавить путь к конфигу в глобальную переменную
+#TODO добавить log_file_name и path_to_log в конфиг
+
+log_file_name = 'info.txt'
 
 class MyDaemon(Daemon):
 
@@ -27,10 +30,25 @@ class MyDaemon(Daemon):
                 return JsonData
         
         def backup(self, y_disk, target_dir: str):
+                date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
                 if y_disk.check_token():
                         print('[+] Success connection')
                         YaDbackup.backup(y_disk, target_dir)
+
+                        info = f"\
+                                {date}\n\
+                                [+] The backup was done successful\n\
+                                {'='*100}\
+                                "
+                        YaDbackup.EditLog(y_disk, target_dir, log_file_name, info)
                 else:
+                        with open(log_file_name, 'a') as readme_f:
+                                info = f"\
+                                        {date}\n\
+                                        [-] Error with Yandex disk access\n\
+                                        {'='*100}\
+                                        "
+                                readme_f.write(info + '\n')
                         os._exit(1)
 
         def run(self):
@@ -70,11 +88,24 @@ if __name__ == "__main__":
         if len(sys.argv) == 2:
                 if 'start' == sys.argv[1]:
                         daemon.start()
+                        date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
                         if not os.path.exists('/tmp/daemon-example.pid'):
-                                print('[-] Error, there is not deamon pid')
+                                with open(log_file_name, 'a') as readme_f:
+                                        info = f"\
+                                                {date}\n\
+                                                [-] Error, there is not deamon pid\n\
+                                                {'='*100}\
+                                                "
+                                        readme_f.write(info + '\n')
                                 sys.exit(3)
                         else:
-                                print('[+] Backup demon is running')    
+                                with open(log_file_name, 'a') as readme_f:
+                                        info = f"\
+                                                {date}\n\
+                                                [+] Backup demon is running\n\
+                                                {'='*100}\
+                                                "
+                                        readme_f.write(info + '\n')
                 elif 'stop' == sys.argv[1]:
                         daemon.stop()
                 elif 'restart' == sys.argv[1]:
@@ -84,5 +115,5 @@ if __name__ == "__main__":
                         sys.exit(2)
                 sys.exit(0)
         else:
-                print("usage: %s start|stop|restart" % sys.argv[0])
+                print("Usage: %s start|stop|restart" % sys.argv[0])
                 sys.exit(2)

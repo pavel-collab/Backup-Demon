@@ -29,13 +29,12 @@ def backup(y_disk, path):
     
     print(f'[+] Backup has been successful compleated! [{date}]')
 
-def EditLog(y_disk, path_to_log, info):
+def EditLog(y_disk, path_to_log, log_file_name, info):
 
-    #! костыль
-    if YD_API.YD_FindObj(y_disk, path_to_log[:len(path_to_log) - len('info.log')], 'info.log'):
-        y_disk.remove(path_to_log, permanently=True)
+    if YD_API.YD_FindObj(y_disk, path_to_log, log_file_name):
+        y_disk.remove(path_to_log+log_file_name, permanently=True)
 
-    with open('info.log', 'a') as readme_f:
+    with open(log_file_name, 'a') as readme_f:
         readme_f.write(info + '\n')
     
-    y_disk.upload('info.log', path_to_log)
+    y_disk.upload(log_file_name, path_to_log+log_file_name)
