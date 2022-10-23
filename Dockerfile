@@ -5,7 +5,6 @@ RUN apt-get update
 RUN apt-get install -y python3
 RUN apt-get install -y pip
 RUN apt-get install -y vim
-RUN apt-get install -y pip
 
 RUN pip install yadisk
 RUN pip install schedule 

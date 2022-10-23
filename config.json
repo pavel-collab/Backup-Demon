@@ -1,8 +1,8 @@
 {
-    "target_dir_path" : "./test_dir/",
-    "token_path" : "~/workfile/Other_things/OwnProjects/token",
-    "path_to_log" : "~/workfile/Other_things/OwnProjects/",
-    "log_file_name" : "info.txt",
+    "target_dir_path"   : "~/workfile/Other_things/OwnProjects/test_dir/",
+    "token_path"        : "~/workfile/Other_things/OwnProjects/token",
+    "path_to_log"       : "~/workfile/Other_things/OwnProjects/",
+    "log_file_name"     : "info.txt",
     "remout_backup_dir" : "/test_backup/",
 
     "period_seconds"  : 5,
