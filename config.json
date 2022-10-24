@@ -3,6 +3,7 @@
     "token_path"        : "~/workfile/Other_things/OwnProjects/token",
     "log_file_name"     : "info.txt",
     "remout_backup_dir" : "/test_backup/",
+    "backup_amount" : 5,
 
     "period_seconds"  : 5,
     "period_minutes"  : 1,

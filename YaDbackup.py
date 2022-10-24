@@ -60,6 +60,7 @@ def backup(y_disk, path, config_name):
     JsonData = parse_json(config_name)
     remote_backup_dir = JsonData['remout_backup_dir']
     log_file_name = JsonData['log_file_name']
+    backup_amount = JsonData['backup_amount']
 
     log = open(dir_location + log_file_name, 'a')
 
@@ -91,10 +92,10 @@ def backup(y_disk, path, config_name):
             {'='*100}\
             "
 
-    rm_backup_result = CleanBackups(y_disk, remote_backup_dir, log_file_name)
+    rm_backup_result = CleanBackups(y_disk, remote_backup_dir, log_file_name, backup_amount)
 
     if rm_backup_result != None:
-        if DEBUG: print(f"[+] backup [{rm_backup_result[0]}] was removed from [{rm_backup_result[1]}]")
+        if DEBUG: print("\033[34m{}".format(f"[+] backup [{rm_backup_result[0]}] was removed from [{rm_backup_result[1]}]"))
         info = info + f"\n\
                         [+] backup [{rm_backup_result[0]}]\
                         was removed from\
