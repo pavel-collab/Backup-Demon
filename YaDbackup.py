@@ -2,6 +2,7 @@ import yadisk
 import os
 from datetime import datetime
 import json
+import time
 
 import YD_API
 
@@ -14,6 +15,32 @@ def parse_json(config_name: str):
 
     JsonData = json.loads(info)
     return JsonData
+
+def CleanBackups(y_disk, path, log_file_name, saved_copies_amount=5):
+    '''
+    If we want to contain on the remoute server only N (for example 8) copies 
+    '''
+
+    # this is an array of objects
+    Info = YD_API.YD_GetDirInfo(y_disk, path)
+    # 5 copies + log file
+    if len(Info) > saved_copies_amount+1:
+        dates = {}
+        for obj in Info:
+            if obj['name'] != log_file_name:
+                dates[time.strptime(datetime.strftime(obj['created'], "%d.%m.%Y-%H.%M.%S"), "%d.%m.%Y-%H.%M.%S")] = obj
+        
+        the_oldest_backup = min(dates.keys())
+
+        for item in list(dates.items()):
+            if item[0] == the_oldest_backup:
+                the_oldest_obj = item[1]
+                break
+
+        y_disk.remove(the_oldest_obj['path'])
+
+        return the_oldest_obj['name'], the_oldest_obj['path']
+    return None
 
 def EditLog(y_disk, path_to_log_remoute, path_to_log_local, log_file_name, info):
 
@@ -63,6 +90,17 @@ def backup(y_disk, path, config_name):
             [+] The backup was done successful\n\
             {'='*100}\
             "
+
+    rm_backup_result = CleanBackups(y_disk, remote_backup_dir, log_file_name)
+
+    if rm_backup_result != None:
+        if DEBUG: print(f"[+] backup [{rm_backup_result[0]}] was removed from [{rm_backup_result[1]}]")
+        info = info + f"\n\
+                        [+] backup [{rm_backup_result[0]}]\
+                        was removed from\
+                        [{rm_backup_result[1]}]\
+                        \n"
+
     EditLog(y_disk, remote_backup_dir, dir_location, log_file_name, info)
     
     if DEBUG: print(f'[+] Backup has been successful compleated! [{date}]')

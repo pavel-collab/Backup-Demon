@@ -34,6 +34,9 @@ def YD_GetDirInfo(y_disk, dir: str):
         obj_info['created'] = item.created
         obj_info['path'] = item.path
         obj_info['type'] = item.type
+
+        #TODO if obj_info['type'] == dir: YD_GetDirInfo(y_disk, item)
+
         obj_info['media_type'] = item.media_type
         obj_info['size'] = item.size
 
@@ -47,6 +50,9 @@ def YD_PrintDirInfo(y_disk, dir: str):
     for item in dir_info:
         print('file %s:' %item['name'])
         print('\ttype: ', item['type'])
+
+        #TODO if item['type'] == dir: ...
+
         print('\tmedia type: ', item['media_type'])
         print('\tpath: ', item['path'])
         print('\tsize: ', item['size'])
