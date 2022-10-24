@@ -1,48 +1,70 @@
 import yadisk
 import os
 from datetime import datetime
+import json
 
 import YD_API
 
+# log_file_name = 'info.txt'
+# remote_backup_dir = '/test_backup/'
 
+def parse_json(config_name: str):
+    with open(config_name, 'r') as config_file:
+            info = config_file.read()
 
-# y = yadisk.YaDisk(token=token)
-# print(y.check_token()) # Проверим токен
+    JsonData = json.loads(info)
+    return JsonData
 
-def backup(y_disk, path):
+def EditLog(y_disk, path_to_log, log_file_name, info):
+
+    if YD_API.YD_FindObj(y_disk, path_to_log, log_file_name):
+        y_disk.remove(path_to_log+log_file_name, permanently=True)
+
+    with open(log_file_name, 'a') as readme_f:
+        readme_f.write(info + '\n')
+    
+    y_disk.upload(log_file_name, path_to_log+log_file_name)
+
+def backup(y_disk, path, config_name):
+    DEBUG = True
+
     date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
     # date = datetime.strftime(datetime.now(), "%d.%m.%Y")
     
-    if YD_API.YD_FindObj(y_disk, '/test_backup', f'{date}'):
-        print('[-] Sorry, such backup is already existed')
+    JsonData = parse_json(config_name)
+    remote_backup_dir = JsonData['remout_backup_dir']
+    log_file_name = JsonData['log_file_name']
+
+    log = open(log_file_name, 'a')
+
+    if YD_API.YD_FindObj(y_disk, remote_backup_dir, f'{date}'):
+        log.write('[-] Sorry, such backup is already existed')
+        if DEBUG: print('[-] Sorry, such backup is already existed')
         return
     
-    y_disk.mkdir(f'/test_backup/{date}')
+    y_disk.mkdir(f'{remote_backup_dir}{date}')
 
     for address, dirs, files in os.walk(path):
         for dir in dirs:
-            y_disk.mkdir(f'/test_backup/{date}/{dir}')
-            print(f'[+] The folder {dir} has been created')
+            y_disk.mkdir(f'{remote_backup_dir}{date}/{dir}')
+            log.write(f'[+] The folder {dir} has been created\n')
+            if DEBUG: print(f'[+] The folder {dir} has been created')
         for file in files:
             intermediate_path = address[len(path):]
             if intermediate_path != '': intermediate_path += '/'
 
             # print(f'/test_backup/{date}/{intermediate_path}{file}')
-            y_disk.upload(f'{address}/{file}', f'/test_backup/{date}/{intermediate_path}{file}')
-            print(f'[+] The file {file} has been uploaded')
+            y_disk.upload(f'{address}/{file}', f'{remote_backup_dir}{date}/{intermediate_path}{file}')
+            log.write(f'[+] The file {file} has been uploaded\n')
+            if DEBUG: print(f'[+] The file {file} has been uploaded')
+
+    log.close()
     
-    print(f'[+] Backup has been successful compleated! [{date}]')
-
-if __name__ == '__main__':
-    with open('token', 'r') as Token:
-        token = Token.read()
-
-    y = yadisk.YaDisk(token=token)
-
-    if y.check_token():
-        print('[+] Success connection')
-        backup(y, './test_dir/')
-    else:
-        os._exit(1)
-
-    YD_API.YD_PrintDiskInfo(y)
+    info = f"\
+            {date}\n\
+            [+] The backup was done successful\n\
+            {'='*100}\
+            "
+    EditLog(y_disk, remote_backup_dir, log_file_name, info)
+    
+    if DEBUG: print(f'[+] Backup has been successful compleated! [{date}]')

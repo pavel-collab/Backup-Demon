@@ -8,7 +8,10 @@
 ### Requirements
 
 ```
+apt-get install -y python3
+RUN apt-get install -y pip
 pip install yadisk
+pip install schedule 
 ```
 
 ### How to use docker
