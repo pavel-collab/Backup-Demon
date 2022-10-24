@@ -12,34 +12,28 @@ from Demon import Daemon
 import YaDbackup
 
 #? что происходит, если время между отправками меньше времени бэкапа
-#TODO переписать функционал, чтобы вся отадочная информация печаталась и в лог файл и в консоль
-#TODO отладочная информация должна печататься в консоль, только если поднят флаг
-#TODO на данный момент, лог фай образуется в корне. Исправить
-#TODO DEBUG в 2х местах. Исправить
 #TODO рефакторинг имен
-#TODO выяснить почему часть функционала не работает. Исправить
 #TODO Написать кусок функционала для удаления старых бэкапов на удаленном диске (не хранить больше, чем n бэкапов)
 #? Возможно, имеет смысл разделить конфиг на 2 структуры -- структура, которую пользователь меняет и которую не меняет
 #TODO Поскольку конфиг всегда храниться в папке с программой -- определять автоматически текущую рабочую папку и коннектить абслютный пусть к названию конфига
 #? в момент прерывания сигналом, процесс может оборваться на середине. Как заставить его делать бэкап до конца?
+#TODO добавить возможность исключать папки и фалы, которые не нужно бэкапить (через конфиг)
 
 #! Написать объяснение, почему в конфигах надо писать абсолютные пути
 
-config_file_name = 'config.json'
-DEBUG = True
+config_file_name = YaDbackup.dir_location + 'config.json'
 
 class MyDaemon(Daemon):
         
         def backup(self, y_disk, target_dir: str):
                 date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
                 JsonData = YaDbackup.parse_json(config_file_name)
-                log_file_name = JsonData['log_file_name']
+                log_file_name = YaDbackup.dir_location + JsonData['log_file_name']
 
                 if y_disk.check_token():
-                        #! HARDCODE
                         with open(log_file_name, 'a') as readme_f:
                                 readme_f.write('[+] Success connection\n')
-                        if DEBUG: print('[+] Success connection')
+                        if YaDbackup.DEBUG: print('[+] Success connection')
                         YaDbackup.backup(y_disk, target_dir, config_file_name)
                 else:
                         with open(log_file_name, 'a') as readme_f:
@@ -75,10 +69,6 @@ class MyDaemon(Daemon):
                         schedule.run_pending()
                         time.sleep(1)
 
-                
-                # YD_API.YD_PrintDiskInfo(y)
-        
-
             
  
 if __name__ == "__main__":
@@ -88,29 +78,6 @@ if __name__ == "__main__":
         if len(sys.argv) == 2:
                 if 'start' == sys.argv[1]:
                         daemon.start()
-                        date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
-                        JsonData = YaDbackup.parse_json(config_file_name)
-                        log_file_name = JsonData['log_file_name']
-
-                        #! This part of code doesn't work!
-                        # if not os.path.exists('/tmp/daemon-example.pid'):
-                        #         with open(log_file_name, 'a') as readme_f:
-                        #                 info = f"\
-                        #                         {date}\n\
-                        #                         [-] Error, there is not deamon pid\n\
-                        #                         {'='*100}\
-                        #                         "
-                        #                 readme_f.write(info + '\n')
-                        #         sys.exit(3)
-                        # else:
-                        #         pass
-                        #         with open(log_file_name, 'a') as readme_f:
-                        #                 info = f"\
-                        #                         {date}\n\
-                        #                         [+] Backup demon is running\n\
-                        #                         {'='*100}\
-                        #                         "
-                        #                 readme_f.write(info + '\n')
                 elif 'stop' == sys.argv[1]:
                         daemon.stop()
                 elif 'restart' == sys.argv[1]:
