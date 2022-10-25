@@ -13,12 +13,15 @@ import YaDbackup
 
 #? что происходит, если время между отправками меньше времени бэкапа
 #TODO рефакторинг имен
-#? Возможно, имеет смысл разделить конфиг на 2 структуры -- структура, которую пользователь меняет и которую не меняет
 #? в момент прерывания сигналом, процесс может оборваться на середине. Как заставить его делать бэкап до конца?
 #TODO добавить возможность исключать папки и фалы, которые не нужно бэкапить (через конфиг)
-#! 1) Разноцветные сообщения появляются только в консоли
-#! 2) После того, как сообщение покрасить в один цвет, сообщения остаются такого цвета навсегда
 #TODO Добавить паттерн для datetime, чтобы можно было менять его в одном месте
+#TODO создать несколько веток для различных реализаций:
+#TODO   реализация чисто через python
+#TODO   реализация через python и C
+#TODO   реалзация через python и C++
+#TODO   реалихация со встроенной библиотекой для демона
+#TODO   демон на C
 
 #! Написать объяснение, почему в конфигах надо писать абсолютные пути
 #! написать комментарии)
@@ -29,8 +32,8 @@ class MyDaemon(Daemon):
         
         def backup(self, y_disk, target_dir: str):
                 date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
-                JsonData = YaDbackup.parse_json(config_file_name)
-                log_file_name = YaDbackup.dir_location + JsonData['log_file_name']
+                dir_settings, system_settings = YaDbackup.parse_json(config_file_name)
+                log_file_name = YaDbackup.dir_location + dir_settings['log_file_name']
 
                 if y_disk.check_token():
                         with open(log_file_name, 'a') as readme_f:
@@ -53,11 +56,13 @@ class MyDaemon(Daemon):
                 # parse it in code
                 # but actually, we can't do the same with path-to-config
                 # so, there is only way -- to hardcode it into src code 
-                JsonData = YaDbackup.parse_json(config_file_name)
+                dir_settings, system_settings = YaDbackup.parse_json(config_file_name)
                 
-                path_to_token = JsonData['token_path']
-                target_dir_path = JsonData['target_dir_path']
-                period_seconds = JsonData['period_seconds']
+                path_to_token = dir_settings['token_path']
+                target_dir_path = dir_settings['target_dir_path']
+
+                #TODO setting of backup period
+                period_seconds = system_settings['period_seconds']
 
                 with open(path_to_token, 'r') as Token:
                         token = Token.read()

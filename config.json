@@ -1,13 +1,18 @@
-{
-    "target_dir_path"   : "~/workfile/Other_things/OwnProjects/test_dir/",
-    "token_path"        : "~/workfile/Other_things/OwnProjects/token",
-    "log_file_name"     : "info.txt",
-    "remout_backup_dir" : "/test_backup/",
-    "backup_amount" : 5,
+[
+    {
+        "target_dir_path"   : "~/workfile/Other_things/OwnProjects/test_dir/",
+        "token_path"        : "~/workfile/Other_things/OwnProjects/token",
+        "log_file_name"     : "info.txt",
+        "remout_backup_dir" : "/test_backup/"
+    },
 
-    "period_seconds"  : 5,
-    "period_minutes"  : 1,
-    "period_hour"     : 1,
-    "period_day"      : 1,
-    "period_week"     : 0
-}
+    {
+        "backup_amount"   : 5,
+    
+        "period_seconds"  : 5,
+        "period_minutes"  : 1,
+        "period_hour"     : 1,
+        "period_day"      : 1,
+        "period_week"     : 0
+    }
+]

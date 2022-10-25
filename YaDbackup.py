@@ -13,8 +13,12 @@ def parse_json(config_name: str):
     with open(config_name, 'r') as config_file:
             info = config_file.read()
 
+    '''this is a list, consists of 2 dictionaries'''
     JsonData = json.loads(info)
-    return JsonData
+    dir_settings = JsonData[0]
+    system_settings = JsonData[1]
+
+    return dir_settings, system_settings
 
 def CleanBackups(y_disk, path, log_file_name, saved_copies_amount=5):
     '''
@@ -57,10 +61,11 @@ def backup(y_disk, path, config_name):
     date = datetime.strftime(datetime.now(), "%d.%m.%Y-%H.%M.%S")
     # date = datetime.strftime(datetime.now(), "%d.%m.%Y")
     
-    JsonData = parse_json(config_name)
-    remote_backup_dir = JsonData['remout_backup_dir']
-    log_file_name = JsonData['log_file_name']
-    backup_amount = JsonData['backup_amount']
+    dir_settings, system_settings = parse_json(config_name)
+
+    remote_backup_dir = dir_settings['remout_backup_dir']
+    log_file_name = dir_settings['log_file_name']
+    backup_amount = system_settings['backup_amount']
 
     log = open(dir_location + log_file_name, 'a')
 
@@ -95,7 +100,7 @@ def backup(y_disk, path, config_name):
     rm_backup_result = CleanBackups(y_disk, remote_backup_dir, log_file_name, backup_amount)
 
     if rm_backup_result != None:
-        if DEBUG: print("\033[34m{}".format(f"[+] backup [{rm_backup_result[0]}] was removed from [{rm_backup_result[1]}]"))
+        if DEBUG: print(f"[+] backup [{rm_backup_result[0]}] was removed from [{rm_backup_result[1]}]")
         info = info + f"\n\
                         [+] backup [{rm_backup_result[0]}]\
                         was removed from\
