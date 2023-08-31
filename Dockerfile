@@ -15,12 +15,12 @@ WORKDIR /usr/src/app/
 ENV TZ Europe/Moscow
 
 # скопировать файлы с текущей дериктории в контейнер
-COPY test_dir /usr/src/app/test_dir
+# COPY test_dir /usr/src/app/test_dir
 COPY RunDemod.py /usr/src/app/RunDemod.py
 COPY Demon.py /usr/src/app/Demon.py
 COPY YaDbackup.py /usr/src/app/YaDbackup.py
 COPY YD_API.py /usr/src/app/YD_API.py
 COPY config.json /usr/src/app/config.json
-COPY token /usr/src/app/token
+# COPY token /usr/src/app/token
 # команды, выполняющиеся при запуске контейнера
 # CMD ["python", "RunDemod.py"]
